@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload PDFs and URLs</title>
+    <style>
+        #drop_zone {
+            width: 300px;
+            height: 100px;
+            border: 2px dashed #0087F7;
+            margin: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="drop_zone">Drop PDF here or click to upload</div>
+    <input type="file" id="file_input" style="display: none;">
+    <input type="text" id="url_input" placeholder="Enter URL">
+    <button onclick="fetchURL()">Fetch URL</button>
+
+    <script>
+        var dropZone = document.getElementById('drop_zone');
+        var fileInput = document.getElementById('file_input');
+
+        dropZone.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        dropZone.addEventListener('dragover', function(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+        });
+
+        dropZone.addEventListener('drop', function(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            var files = event.dataTransfer.files;
+            uploadFile(files[0]);
+        });
+
+        fileInput.addEventListener('change', function() {
+            uploadFile(this.files[0]);
+        });
+
+        function uploadFile(file) {
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => console.log(data));
+        }
+
+        function fetchURL() {
+            var url = document.getElementById('url_input').value;
+            fetch('/fetch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({url: url}),
+            })
+            .then(response => response.json())
+            .then(data => console.log(data));
+        }
+    </script>
+</body>
+</html>
