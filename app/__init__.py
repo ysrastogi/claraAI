@@ -1,6 +1,6 @@
 from flask import Flask
 from .main import main
-from .extensions import llm, chain  # Import if needed for app context
+from .extensions import llm 
 
 def create_app():
     app = Flask(__name__)
